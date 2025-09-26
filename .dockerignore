@@ -1,4 +1,5 @@
+.git
 __pycache__
-db-data
 docs
+db-data
 *.py[cod]
