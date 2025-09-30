@@ -35,6 +35,10 @@ test:
 	docker exec -it ${NAME}_django uv run coverage run -m pytest
 	docker exec -it ${NAME}_django uv run coverage html
 
+.PHONY: type
+type:
+	docker exec -it ${NAME}_django uv run mypy ${NAME}
+
 .PHONY: migrations
 migrations:
 	docker exec -it ${NAME}_django uv run manage.py makemigrations

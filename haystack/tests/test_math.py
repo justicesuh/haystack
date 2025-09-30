@@ -1,8 +1,8 @@
-def add(x: int, y: int) -> None:
+def add(x: int, y: int) -> int:
     return x + y
 
 
-def subtract(x: int, y: int) -> None:
+def subtract(x: int, y: int) -> int:
     return x - y
 
 
