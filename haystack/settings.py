@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from environ import Env
@@ -30,6 +31,45 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '[{levelname}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARN',
+            'propagate': False,
+        },
+        'haystack': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },        
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
