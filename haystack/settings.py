@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'haystack.core',
+    'haystack.jobs',
     'haystack.users',
 ]
 
