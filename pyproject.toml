@@ -44,6 +44,7 @@ ignore = [
     "FBT002", # boolean default fields
     "ANN001", # function parameter type annotations
     "UP040", # PEP695 TypeAlias
+    "RUF012", # ClassVar
 ]
 fixable = ["ALL"]
 unfixable = []
