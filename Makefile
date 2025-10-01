@@ -39,6 +39,9 @@ test:
 type:
 	docker exec -it ${NAME}_django uv run mypy ${NAME}
 
+.PHONY: ci
+ci: lint type format test
+
 .PHONY: migrations
 migrations:
 	docker exec -it ${NAME}_django uv run manage.py makemigrations
