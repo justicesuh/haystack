@@ -10,6 +10,13 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="/">Haystack</a>
+            {% if request.user.is_authenticated %}
+            <ul class="navbar-nav me-auto">
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/logout/">Log Out</a></li>
+            </ul>
+            {% endif %}
         </div>
     </nav>
     <div class="container mt-3">
