@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from haystack.core.models import UUIDModel
 
@@ -76,5 +77,54 @@ class Job(UUIDModel):
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=NEW)
     date_applied = models.DateTimeField(null=True, blank=True)
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.cached_status = self.status
+
+    def update_status(self, new_status: str) -> None:
+        if self.cached_status == new_status:
+            return
+        self.status = new_status
+        event = Event.objects.create(
+            event_type=Event.STATUS, job=self, old_status=self.cached_status, new_status=self.status
+        )
+        event.save()
+        self.cached_status = self.status
+
+        if self.status == Job.APPLIED:
+            self.date_applied = timezone.now().date()
+        self.save()
+
+    def add_note(self, note: str) -> None:
+        event = Event.objects.create(event_type=Event.NOTE, job=self, note=note)
+        event.save()
+        self.save()
+
     def __str__(self) -> str:
         return self.title
+
+
+class Event(UUIDModel):
+    NOTE = 'note'
+    STATUS = 'status'
+
+    EVENT_TYPE_CHOICES = (
+        (NOTE, NOTE.capitalize()),
+        (STATUS, STATUS.capitalize()),
+    )
+
+    event_type = models.CharField(max_length=6, choices=EVENT_TYPE_CHOICES)
+    job = models.ForeignKey(Job, related_name='events', on_delete=models.CASCADE)
+
+    old_status = models.CharField(max_length=12, choices=Job.STATUS_CHOICES, default='')
+    new_status = models.CharField(max_length=12, choices=Job.STATUS_CHOICES, default='')
+
+    note = models.TextField(default='')
+
+    def __str__(self) -> str:
+        ret = f'{self.job.title} | '
+        if self.event_type == Event.NOTE:
+            ret += self.note
+        else:
+            ret += f'{self.old_status} -> {self.new_status}'
+        return ret
