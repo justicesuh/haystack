@@ -16,6 +16,7 @@ class Search(UUIDModel):
     is_active = models.BooleanField(default=True)
 
     class Meta:
+        unique_together = (('keywords', 'location', 'easy_apply', 'flexibility'),)
         verbose_name = 'search'
         verbose_name_plural = 'searches'
 
@@ -28,3 +29,8 @@ class Search(UUIDModel):
     def update_last_executed(self) -> None:
         self.last_executed = timezone.now()
         self.save()
+
+    def __str__(self) -> str:
+        easy_apply = 'Yes' if self.easy_apply else 'No'
+        flexibility = dict(Job.FLEXIBILITY_CHOICES)[self.flexibility]
+        return f'{self.keywords} | Easy Apply: {easy_apply} | {flexibility}'
