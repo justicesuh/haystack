@@ -1,9 +1,12 @@
+import logging
 from typing import cast
 
 from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.service import Service
 from seleniumwire import webdriver
 from seleniumwire.request import Response
+
+logging.getLogger('seleniumwire').setLevel(logging.WARNING)
 
 
 class Firefox:
