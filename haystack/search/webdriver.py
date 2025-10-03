@@ -1,7 +1,8 @@
-# ruff: noqa: E402, I001
+# ruff: noqa: E402
 
 import logging
 import warnings
+
 warnings.filterwarnings(
     'ignore',
     r'^pkg_resources is deprecated as an API',
@@ -16,15 +17,27 @@ from seleniumwire import webdriver
 from seleniumwire.request import Response
 
 logging.getLogger('seleniumwire').setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 class Firefox:
-    def __init__(self) -> None:
-        options = webdriver.FirefoxOptions()
-        options.add_argument('--no-sandbox')
-        options.add_argument('--headless')
-        service = Service(executable_path='/usr/local/bin/geckodriver')
-        self.driver = webdriver.Firefox(options=options, service=service)
+    def __init__(self, request_interceptor=None, response_processor=None) -> None:
+        self.request_interceptor = request_interceptor
+        self.response_processor = response_processor
+
+        self.options = webdriver.FirefoxOptions()
+        self.options.add_argument('--no-sandbox')
+        self.options.add_argument('--headless')
+
+        self.service = Service(executable_path='/usr/local/bin/geckodriver')
+
+        self.create_driver()
+
+    def create_driver(self) -> None:
+        self.quit()
+        self.driver = webdriver.Firefox(options=self.options, service=self.service)
+        if self.request_interceptor is not None:
+            self.driver.request_interceptor = self.request_interceptor
 
     def get_last_response(self) -> Response | None:
         request = self.driver.requests[-1] if self.driver.requests else None
@@ -33,14 +46,19 @@ class Firefox:
         return None
 
     def get(self, url: str) -> Response | None:
+        logger.info('GET %s', url)
         self.driver.get(url)
-        response = self.get_last_response()
-        if response is not None:
-            return response
-        return None
+        if self.response_processor is not None:
+            response = self.response_processor(self.driver.requests)
+        else:
+            response = self.get_last_response()
+        if response is None or response.status_code in [403, 404, 429, 500, 501, 502, 503, 504]:
+            return None
+        return response
 
     def soupify(self) -> BeautifulSoup:
         return BeautifulSoup(self.driver.page_source, 'html.parser')
 
     def quit(self) -> None:
-        self.drver.quit()
+        if hasattr(self, 'driver'):
+            self.driver.quit()

@@ -91,5 +91,9 @@ skip_covered = true
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
 
+[[tool.mypy.overrides]]
+module = ["seleniumwire.*"]
+follow_untyped_imports = true
+
 [tool.django-stubs]
 django_settings_module = "haystack.settings"
