@@ -357,7 +357,7 @@ requires-dist = [
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-django", specifier = ">=4.11.1" },
     { name = "selenium-wire", specifier = ">=5.1.0" },
-    { name = "setuptools", specifier = ">=80.9.0" },
+    { name = "setuptools", specifier = "<81" },
 ]
 
 [package.metadata.requires-dev]

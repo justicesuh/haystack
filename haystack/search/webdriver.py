@@ -1,4 +1,13 @@
+# ruff: noqa: E402, I001
+
 import logging
+import warnings
+warnings.filterwarnings(
+    'ignore',
+    r'^pkg_resources is deprecated as an API',
+    category=UserWarning,
+)
+
 from typing import cast
 
 from bs4 import BeautifulSoup
