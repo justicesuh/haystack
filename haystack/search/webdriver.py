@@ -1,6 +1,7 @@
 # ruff: noqa: E402
 
 import logging
+import time
 import warnings
 
 warnings.filterwarnings(
@@ -70,6 +71,21 @@ class Firefox:
         if response is None or response.status_code in [403, 404, 429, 500, 501, 502, 503, 504]:
             return None
         return response
+
+    def get_with_retry(self, url: str, retries=8, backoff_factor=1) -> Response | None:
+        for i in range(retries):
+            try:
+                response = self.get(url)
+                if response is not None:
+                    return response
+                self.create_driver()
+            except Exception:  # noqa: BLE001
+                self.create_driver()
+            backoff = backoff_factor * (2**i)
+            logger.info('Sleeping for %s seconds', backoff)
+            time.sleep(backoff)
+        logger.info('Max retries for %s exceeded', url)
+        return None
 
     def soupify(self) -> BeautifulSoup:
         return BeautifulSoup(self.driver.page_source, 'html.parser')

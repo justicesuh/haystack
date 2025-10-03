@@ -8,7 +8,7 @@ from haystack.search.webdriver import Firefox
 
 class Command(BaseCommand):
     def get_ip(self, firefox: Firefox) -> str:
-        response = firefox.get('https://icanhazip.com/')
+        response = firefox.get_with_retry('https://icanhazip.com/')
         if response is not None:
             soup = firefox.soupify()
             tag = soup.find('pre')
