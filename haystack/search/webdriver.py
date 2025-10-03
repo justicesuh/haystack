@@ -9,6 +9,7 @@ warnings.filterwarnings(
     category=UserWarning,
 )
 
+from copy import deepcopy
 from typing import cast
 
 from bs4 import BeautifulSoup
@@ -48,7 +49,7 @@ class Firefox:
     def create_driver(self) -> None:
         self.quit()
         self.driver = webdriver.Firefox(
-            options=self.options, service=self.service, seleniumwire_options=self.seleniumwire_options
+            options=self.options, service=self.service, seleniumwire_options=deepcopy(self.seleniumwire_options)
         )
         if self.request_interceptor is not None:
             self.driver.request_interceptor = self.request_interceptor
