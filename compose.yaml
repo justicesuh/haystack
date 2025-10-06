@@ -1,8 +1,10 @@
 services:
   python:
     build: .
-    container_name: haystack_python
+    container_name: haystack_django
     command: /bin/bash
+    ports:
+      - 8000:8000
     restart: unless-stopped
     stdin_open: true
     tty: true
