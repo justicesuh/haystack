@@ -18,6 +18,19 @@ down:
 serve:
 	docker exec -it ${NAME}_django uv run manage.py runserver 0.0.0.0:${PORT}
 
+
+.PHONY: lint
+lint:
+	docker exec -it ${NAME}_django uv run ruff check ${NAME}
+
+.PHONY: fix
+fix:
+	docker exec -it ${NAME}_django uv run ruff check --fix ${NAME}
+
+.PHONY: format
+format:
+	docker exec -it ${NAME}_django uv run ruff format ${NAME}
+
 .PHONY: migrations
 migrations:
 	docker exec -it ${NAME}_django uv run manage.py makemigrations
