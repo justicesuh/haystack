@@ -5,9 +5,13 @@ description = ""
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "coverage>=7.10.7",
     "django>=5.2.7",
     "django-environ>=0.12.0",
     "psycopg2-binary>=2.9.10",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-django>=4.11.1",
 ]
 
 [dependency-groups]
@@ -41,6 +45,12 @@ unfixable = []
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
 
+[tool.ruff.lint.per-file-ignores]
+"*/tests/*" = [
+    "PLR2004",  # magic-value-comparison
+    "S101",     # assert
+]
+
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "space"
@@ -48,3 +58,21 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 docstring-code-format = true
 docstring-code-line-length = "dynamic"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "haystack.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+
+[tool.coverage.run]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/settings/*",
+    "*/manage.py",
+    "*/wsgi.py",
+    "*/asgi.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

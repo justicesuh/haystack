@@ -31,6 +31,11 @@ fix:
 format:
 	docker exec -it ${NAME}_django uv run ruff format ${NAME}
 
+.PHONY: test
+test:
+	docker exec -it ${NAME}_django uv run coverage run -m pytest
+	docker exec -it ${NAME}_django uv run coverage html
+
 .PHONY: migrations
 migrations:
 	docker exec -it ${NAME}_django uv run manage.py makemigrations
