@@ -1,4 +1,6 @@
+.git
 __pycache__
 db-data
 docs
 *.py[cod]
+README.md
