@@ -34,6 +34,7 @@ format:
 .PHONY: test
 test:
 	docker exec -it ${NAME}_django uv run coverage run -m pytest
+	docker exec -it ${NAME}_django uv run coverage report -m --skip-covered
 	docker exec -it ${NAME}_django uv run coverage html
 
 .PHONY: migrations
