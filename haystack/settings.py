@@ -20,6 +20,8 @@ DEBUG = True
 
 ALLOWED_HOSTS: list[str] = []
 
+AUTH_USER_MODEL = 'users.User'
+
 
 # Application definition
 
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'haystack.core',
+    'haystack.users',
 ]
 
 LOGGING = {
