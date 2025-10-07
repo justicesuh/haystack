@@ -37,6 +37,7 @@ ignore = [
     "COM812",   # missing-trailing-comma
     "D100",     # Missing docstring in public module
     "D104",     # Missing docstring in public package
+    "D106",     # Missing docstring in public nested class
     "D203",     # incorrect-blank-line-before-class
     "D213",     # multi-line-summary-second-line
 ]
