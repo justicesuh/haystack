@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.http.request import HttpRequest
+from django.http import HttpRequest
 
 from haystack.core.typing import _FieldGroups, _ListOrTuple, _ModelT
 
