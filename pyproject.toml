@@ -42,6 +42,11 @@ ignore = [
     "D107",     # Missing docstring in `__init__`
     "D203",     # incorrect-blank-line-before-class
     "D213",     # multi-line-summary-second-line
+    "EM101",    # raw-string-in-exception
+    "FBT001",   # Boolean-typed positional argument
+    "FBT002",   # Boolean default positional argument
+    "PLR2004",  # magic-value-comparison
+    "TRY003",   # raise-vanilla-args
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -54,7 +59,6 @@ inline-quotes = "single"
     "D101",     # Missing docstring in public class
 ]
 "*/tests/*" = [
-    "PLR2004",  # magic-value-comparison
     "S101",     # assert
 ]
 
