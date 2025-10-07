@@ -3,7 +3,8 @@ from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.functional import Promise
+
+from haystack.core.typing import _StrOrPromise
 
 
 class AutoCreatedField(models.DateTimeField):
@@ -27,7 +28,7 @@ class UUIDField(models.UUIDField):
 
     def __init__(
         self,
-        verbose_name: str | Promise | None = None,
+        verbose_name: _StrOrPromise | None = None,
         primary_key: bool = False,
         version: int = 4,
         editable: bool = False,

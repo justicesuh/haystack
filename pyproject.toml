@@ -46,7 +46,10 @@ ignore = [
     "FBT001",   # Boolean-typed positional argument
     "FBT002",   # Boolean default positional argument
     "PLR2004",  # magic-value-comparison
+    "PYI018",   # unused-private-type-var
+    "PYI047",   # unused-private-type-alias
     "TRY003",   # raise-vanilla-args
+    "UP040",    # non-pep695-type-alias
 ]
 fixable = ["ALL"]
 unfixable = []
