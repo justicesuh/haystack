@@ -45,11 +45,33 @@ class Job(UUIDModel):
         (REMOTE, REMOTE.capitalize()),
     )
 
+    NEW = 'new'
+    DISMISSED = 'dismissed'
+    SAVED = 'saved'
+    APPLIED = 'applied'
+    REJECTED = 'rejected'
+    INTERVIEWING = 'interviewing'
+    OFFER = 'offer'
+    ACCEPTED = 'accepted'
+    WITHDRAWN = 'withdrawn'
+
+    STATUS_CHOICES = (
+        (NEW, NEW.capitalize()),
+        (DISMISSED, DISMISSED.capitalize()),
+        (SAVED, SAVED.capitalize()),
+        (APPLIED, APPLIED.capitalize()),
+        (REJECTED, REJECTED.capitalize()),
+        (INTERVIEWING, INTERVIEWING.capitalize()),
+        (OFFER, OFFER.capitalize()),
+        (ACCEPTED, ACCEPTED.capitalize()),
+        (WITHDRAWN, WITHDRAWN.capitalize()),
+    )
+
     company = models.ForeignKey(Company, related_name='jobs', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     url = models.URLField(unique=True)
     location = models.ForeignKey(Location, related_name='jobs', on_delete=models.SET_NULL, null=True, blank=True)
-    date_posted = models.DateField()
+    date_posted = models.DateTimeField(null=True, blank=True)
 
     search = models.ForeignKey('search.Search', related_name='jobs', on_delete=models.SET_NULL, null=True, blank=True)
     date_found = models.DateField(null=True, blank=True)
@@ -57,6 +79,11 @@ class Job(UUIDModel):
 
     easy_apply = models.BooleanField(default=False)
     flexibility = models.CharField(max_length=6, choices=FLEXIBILITY_CHOICES, default=ONSITE)
+    description = models.TextField(default='')
+    raw_html = models.TextField(default='')
+
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=NEW)
+    date_applied = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:
         """Return Job title."""
