@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 def index(request: HttpRequest) -> HttpResponse:
     """Index page."""
-    return render(request, 'index.html')
+    return render(request, 'users/index.html')
