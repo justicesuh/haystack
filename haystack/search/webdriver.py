@@ -42,6 +42,7 @@ class Firefox:
                 }
             }
 
+        self.driver = None
         self.create_driver()
 
     def create_driver(self) -> None:
@@ -100,5 +101,14 @@ class Firefox:
 
     def quit(self) -> None:
         """End webdriver session."""
-        if hasattr(self, 'driver'):
-            self.driver.quit()
+        if self.driver is None:
+            return
+        try:
+            if getattr(self.driver, 'session_id', None):
+                self.driver.quit()
+            else:
+                logger.info('Webdriver session already closed')
+        except WebDriverException as e:
+            logger.warning('Issue quiting webdriver session: %s', e)
+        finally:
+            self.driver = None
