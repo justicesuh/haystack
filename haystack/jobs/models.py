@@ -27,6 +27,8 @@ class Location(UUIDModel):
     Optional `geo_id` must conform to Bing Geo.
     """
 
+    WORLDWIDE = 92000000
+
     name = models.CharField(max_length=255, unique=True)
     geo_id = models.IntegerField(unique=True, null=True, blank=True)
 
