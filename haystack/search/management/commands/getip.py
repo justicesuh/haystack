@@ -9,5 +9,6 @@ class Command(BaseCommand):
     def handle(self, **options: Any) -> None:
         """Get ip."""
         firefox = Firefox()
-        page_source = firefox.get('https://icanhazip.com/')
-        self.stdout.write(page_source)
+        soup = firefox.get('https://icanhazip.com/')
+        if (tag := soup.find('pre')) is not None:
+            self.stdout.write(tag.text.strip())

@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 
@@ -12,10 +13,14 @@ class Firefox:
         service = Service(executable_path='/usr/local/bin/geckodriver')
         self.driver = webdriver.Firefox(options=options, service=service)
 
-    def get(self, url: str) -> str:
+    def get(self, url: str) -> BeautifulSoup:
         """Naviage to `url` and return page source."""
         self.driver.get(url)
-        return self.driver.page_source
+        return self.soupify()
+
+    def soupify(self) -> BeautifulSoup:
+        """Parse current page source into BeautifulSoup object."""
+        return BeautifulSoup(self.driver.page_source, 'html.parser')
 
     def quit(self) -> None:
         """End webdriver session."""
