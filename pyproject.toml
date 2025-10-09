@@ -90,10 +90,6 @@ python_files = ["tests.py", "test_*.py", "*_tests.py"]
 omit = [
     "*/migrations/*",
     "*/tests/*",
-    "*/settings/*",
-    "*/manage.py",
-    "*/wsgi.py",
-    "*/asgi.py",
 ]
 
 [tool.coverage.report]
