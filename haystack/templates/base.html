@@ -1,4 +1,5 @@
 {% load django_htmx %}
+{% load nav_active %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,11 +9,14 @@
     <title>Haystack</title>
 </head>
 <body hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' style="background-color: #e9ecef;">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid mx-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-relative">
+        <div class="container-fluid mx-4 position-relative">
             <a class="navbar-brand" href="/">Haystack</a>
             {% if request.user.is_authenticated %}
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav mx-auto position-absolute start-50 translate-middle-x">
+                <li class="nav-item"><a class="nav-link {% active '/jobs/' %}" href="/jobs/">Jobs</a></li>
+                <li class="nav-item"><a class="nav-link {% active '/companies/' %}" href="/companies/">Companies</a></li>
+                <li class="nav-item"><a class="nav-link {% active '/searches/' %}" href="/searches/">Searches</a></li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
