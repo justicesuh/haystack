@@ -7,7 +7,7 @@ class Firefox:
     """A wrapper around the Selenium Firefox webdriver."""
 
     def __init__(self) -> None:
-        options = webdriver.Options()
+        options = webdriver.FirefoxOptions()
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         service = Service(executable_path='/usr/local/bin/geckodriver')
