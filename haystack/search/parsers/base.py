@@ -8,7 +8,10 @@ from haystack.search.webdriver import Firefox
 
 logger = logging.getLogger(__name__)
 
-firefox_blocklist: list[str] = []
+firefox_blocklist: list[str] = [
+    'firefox-settings-attachments.cdn.mozilla.net',
+    'firefox.settings.services.mozilla.com',
+]
 
 
 class BaseParser:
@@ -16,14 +19,15 @@ class BaseParser:
 
     blocklist: ClassVar[list[str]] = []
 
-    def __init__(self) -> None:
+    def __init__(self, log_intercepts: bool = False) -> None:
+        self.log_intercepts = log_intercepts
         self.firefox = Firefox(settings.SEARCH_PROXY, self.intercept_request, self.process_response)
 
     def intercept_request(self, request: Request) -> None:
         """Abort request if host is in blocklist."""
         if request.host in firefox_blocklist + self.blocklist:
             request.abort(error_code=404)
-        else:
+        elif self.log_intercepts:
             logger.info('Intercepting %s', request.host)
 
     def process_response(self, requests: list[Request]) -> Response | None:
