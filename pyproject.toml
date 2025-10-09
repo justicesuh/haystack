@@ -15,7 +15,7 @@ dependencies = [
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.11.1",
-    "selenium>=4.36.0",
+    "selenium-wire>=5.1.0",
 ]
 
 [dependency-groups]

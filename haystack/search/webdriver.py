@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
+from seleniumwire import webdriver
 
 
 class Firefox:
     """A wrapper around the Selenium Firefox webdriver."""
 
     def __init__(self) -> None:
-        options = webdriver.FirefoxOptions()
+        options = webdriver.Options()
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
         service = Service(executable_path='/usr/local/bin/geckodriver')
