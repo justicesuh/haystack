@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Callable
+from copy import deepcopy
 from typing import cast
 
 from bs4 import BeautifulSoup
@@ -42,10 +43,17 @@ class Firefox:
         self.create_driver()
 
     def create_driver(self) -> None:
-        """Create Firefox webdriver."""
+        """Create Firefox webdriver.
+
+        Deepcopy of `self.seleniumwire_options` is required because
+        upstream proxy configuration destroys original dictionary.
+
+        See https://github.com/wkeeling/selenium-wire/blob/da1b675fe2cc6dae2e3bb959c1ce95eb1c41830b/seleniumwire/utils.py#L24
+        for more details.
+        """
         self.quit()
         self.driver = webdriver.Firefox(
-            options=self.options, service=self.service, seleniumwire_options=self.seleniumwire_options
+            options=self.options, service=self.service, seleniumwire_options=deepcopy(self.seleniumwire_options)
         )
         if self.request_interceptor is not None:
             self.driver.request_interceptor = self.request_interceptor
