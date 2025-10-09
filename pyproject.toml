@@ -104,7 +104,7 @@ skip_covered = true
 plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
-module = ["environ.*"]
+module = ["environ.*", "seleniumwire.*"]
 follow_untyped_imports = true
 
 [tool.django-stubs]
