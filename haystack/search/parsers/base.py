@@ -37,6 +37,22 @@ class BaseParser:
             return response
         return None
 
+    def create_driver(self) -> None:
+        """Create Firefox driver."""
+        self.firefox.create_driver()
+
     def quit(self) -> None:
         """Quit webdriver session."""
         self.firefox.quit()
+
+
+class IPParser(BaseParser):
+    """A class to demonstrate webdriver by getting IP address."""
+
+    def parse(self) -> str:
+        """Return IP address."""
+        if self.firefox.get_with_retry('https://icanhazip.com/') is not None:
+            soup = self.firefox.soupify()
+            if (tag := soup.find('pre')) is not None:
+                return tag.text.strip()
+        return ''

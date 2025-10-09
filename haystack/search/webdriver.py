@@ -100,6 +100,8 @@ class Firefox:
 
     def quit(self) -> None:
         """End webdriver session."""
+        if not hasattr(self, 'driver'):
+            return
         try:
             if getattr(self.driver, 'session_id', None):
                 self.driver.quit()
