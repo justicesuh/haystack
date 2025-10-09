@@ -9,7 +9,7 @@ from haystack.search.webdriver import Firefox
 class Command(BaseCommand):
     def get_ip(self, firefox: Firefox) -> str:
         """Return IP address."""
-        if firefox.get('https://icanhazip.com/') is not None:
+        if firefox.get_with_retry('https://icanhazip.com/') is not None:
             soup = firefox.soupify()
             if (tag := soup.find('pre')) is not None:
                 return tag.text.strip()

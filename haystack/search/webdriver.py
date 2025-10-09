@@ -1,9 +1,11 @@
 import logging
+import time
 from collections.abc import Callable
 from copy import deepcopy
 from typing import cast
 
 from bs4 import BeautifulSoup
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.firefox.service import Service
 from seleniumwire import webdriver
 from seleniumwire.request import Response
@@ -75,6 +77,22 @@ class Firefox:
         if response is None or response.status_code in [403, 404, 429, 500, 501, 502, 503, 504]:
             return None
         return response
+
+    def get_with_retry(self, url: str, retries: int = 8, backoff_factor: int = 1) -> Response | None:
+        """Retrieve url using exponential backoff."""
+        for attempt in range(retries):
+            try:
+                if (response := self.get(url)) is not None:
+                    return response
+                self.create_driver()
+            except WebDriverException:
+                logger.warning('Attempt %d failed for %s', attempt + 1, url)
+                self.create_driver()
+            backoff = backoff_factor * (2**attempt)
+            logger.info('Sleeping for %d seconds', backoff)
+            time.sleep(backoff)
+        logger.warning('Max retries for %s exceeded', url)
+        return None
 
     def soupify(self) -> BeautifulSoup:
         """Parse current page source into BeautifulSoup object."""
