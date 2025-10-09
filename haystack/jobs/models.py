@@ -110,7 +110,7 @@ class Job(UUIDModel):
         self.cached_status = self.status
 
         if self.status == Job.APPLIED:
-            self.date_applied = timezone.now().date()
+            self.date_applied = timezone.now()
         self.save()
 
     def add_note(self, note: str) -> None:
