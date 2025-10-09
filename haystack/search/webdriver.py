@@ -15,7 +15,10 @@ class Firefox:
     """A wrapper around the Selenium Firefox webdriver."""
 
     def __init__(
-        self, request_interceptor: Callable | None = None, response_processor: Callable | None = None
+        self,
+        proxy: str | None = None,
+        request_interceptor: Callable | None = None,
+        response_processor: Callable | None = None,
     ) -> None:
         self.request_interceptor = request_interceptor
         self.response_processor = response_processor
@@ -26,12 +29,24 @@ class Firefox:
 
         self.service = Service(executable_path='/usr/local/bin/geckodriver')
 
+        self.seleniumwire_options: dict[str, dict[str, str]] | None = None
+        if proxy is not None:
+            self.seleniumwire_options = {
+                'proxy': {
+                    'http': proxy,
+                    'https': proxy,
+                    'no_proxy': 'localhost,127.0.0.1',
+                }
+            }
+
         self.create_driver()
 
     def create_driver(self) -> None:
         """Create Firefox webdriver."""
         self.quit()
-        self.driver = webdriver.Firefox(options=self.options, service=self.service)
+        self.driver = webdriver.Firefox(
+            options=self.options, service=self.service, seleniumwire_options=self.seleniumwire_options
+        )
         if self.request_interceptor is not None:
             self.driver.request_interceptor = self.request_interceptor
 

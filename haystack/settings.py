@@ -93,6 +93,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'haystack.urls'
 
+SEARCH_PROXY = env('SEARCH_PROXY')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
