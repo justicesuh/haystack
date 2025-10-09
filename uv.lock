@@ -105,6 +105,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-htmx"
+version = "1.26.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "asgiref" },
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e8/ea/3d0fb10e6ebbceab57b5e228c8ae5e4ebed3b6d6767d07468923ca000fa3/django_htmx-1.26.0.tar.gz", hash = "sha256:88ecc2f8a3f13ad5a50e6b16be127f04fba369124cc40a09b21ce33babb04aa6", size = 65345, upload-time = "2025-09-22T09:23:41.582Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dd/fc/dbbc54af504427f5f248a73cf9a2d40bfd22631bbf042d313563acc4d223/django_htmx-1.26.0-py3-none-any.whl", hash = "sha256:3a80ffaa6df5a07e833752cd8ada7cee0fa711787841ab17a805075b1aecacc7", size = 62122, upload-time = "2025-09-22T09:23:40.18Z" },
+]
+
+[[package]]
 name = "django-stubs"
 version = "5.2.6"
 source = { registry = "https://pypi.org/simple" }
@@ -145,6 +158,7 @@ dependencies = [
     { name = "coverage" },
     { name = "django" },
     { name = "django-environ" },
+    { name = "django-htmx" },
     { name = "django-stubs", extra = ["compatible-mypy"] },
     { name = "psycopg2-binary" },
     { name = "pytest" },
@@ -162,6 +176,7 @@ requires-dist = [
     { name = "coverage", specifier = ">=7.10.7" },
     { name = "django", specifier = ">=5.2.7" },
     { name = "django-environ", specifier = ">=0.12.0" },
+    { name = "django-htmx", specifier = ">=1.26.0" },
     { name = "django-stubs", extras = ["compatible-mypy"], specifier = ">=5.2.6" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pytest", specifier = ">=8.4.2" },

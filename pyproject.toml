@@ -8,6 +8,7 @@ dependencies = [
     "coverage>=7.10.7",
     "django>=5.2.7",
     "django-environ>=0.12.0",
+    "django-htmx>=1.26.0",
     "django-stubs[compatible-mypy]>=5.2.6",
     "psycopg2-binary>=2.9.10",
     "pytest>=8.4.2",
