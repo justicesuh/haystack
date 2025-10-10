@@ -52,7 +52,7 @@ class LinkedInParser(BaseParser):
         if wt:
             params['f_WT'] = quote(','.join(wt))
 
-        return f'https://linkedin.com{endpoint}/search?{urlencode(params)}'
+        return f'https://linkedin.com{endpoint}search?{urlencode(params)}'
 
     def parse(self, search_source: SearchSource) -> str:
         """Parse jobs."""

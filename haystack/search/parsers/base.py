@@ -9,8 +9,12 @@ from haystack.search.webdriver import Firefox
 logger = logging.getLogger(__name__)
 
 firefox_blocklist: list[str] = [
+    'content-signature-2.cdn.mozilla.net',
+    'detectportal.firefox.com',
     'firefox-settings-attachments.cdn.mozilla.net',
     'firefox.settings.services.mozilla.com',
+    'shavar.services.mozilla.com',
+    'tracking-protection.cdn.mozilla.net',
 ]
 
 
