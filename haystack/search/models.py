@@ -1,4 +1,6 @@
-from django.db import models
+from typing import Any, ClassVar
+
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from haystack.core.models import UUIDModel
@@ -20,6 +22,24 @@ class Source(UUIDModel):
 
     name = models.CharField(max_length=32, unique=True)
     parser = models.CharField(max_length=32, unique=True)
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Attach all `Search` objects to new `Source`."""
+        is_create = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_create:
+
+            def _attach_all_searches() -> None:
+                search_ids = list(Search.objects.values_list('id', flat=True))
+                if search_ids is None:
+                    return
+                SearchSource.objects.bulk_create(
+                    (SearchSource(search_id=sid, source_id=self.id) for sid in search_ids),
+                    ignore_conflicts=True,
+                )
+
+            transaction.on_commit(_attach_all_searches)
 
     def __str__(self) -> str:
         """Return Source name."""
@@ -53,6 +73,24 @@ class Search(UUIDModel):
             return Location.WORLDWIDE
         return int(geo_id)
 
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Attach all `Source` objects to new `Search`."""
+        is_create = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_create:
+
+            def _attach_all_sources() -> None:
+                source_ids = list(Source.objects.values_list('id', flat=True))
+                if not source_ids:
+                    return
+                SearchSource.objects.bulk_create(
+                    (SearchSource(search_id=self.id, source_id=sid) for sid in source_ids),
+                    ignore_conflicts=True,
+                )
+
+            transaction.on_commit(_attach_all_sources)
+
     def __str__(self) -> str:
         """Return string representation of Search."""
         easy_apply = 'Yes' if self.easy_apply else 'No'
@@ -75,6 +113,9 @@ class SearchSource(UUIDModel):
     last_executed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=9, choices=Status.choices, default=Status.IDLE)
     is_active = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together: ClassVar[list[tuple[str, ...]]] = [('search', 'source')]
 
     def __str__(self) -> str:
         """Return Search and Source."""
