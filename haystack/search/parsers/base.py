@@ -19,7 +19,12 @@ class BaseParser:
 
     blocklist: ClassVar[list[str]] = []
 
+    name: ClassVar[str] = ''
+
     def __init__(self, log_intercepts: bool = False) -> None:
+        if not self.name:
+            msg = f'`{self.__class__.__name__}.name` must be defined.'
+            raise ValueError(msg)
         self.log_intercepts = log_intercepts
         self.firefox = Firefox(settings.SEARCH_PROXY, self.intercept_request, self.process_response)
 
@@ -52,6 +57,8 @@ class BaseParser:
 
 class IPParser(BaseParser):
     """A class to demonstrate webdriver by getting IP address."""
+
+    name = 'ip'
 
     def parse(self) -> str:
         """Return IP address."""
