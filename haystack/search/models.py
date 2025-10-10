@@ -45,6 +45,14 @@ class Search(UUIDModel):
         verbose_name = 'search'
         verbose_name_plural = 'searches'
 
+    @property
+    def geo_id(self) -> int:
+        """Return Location `geo_id`."""
+        geo_id = getattr(self.location, 'geo_id', None)
+        if geo_id is None:
+            return Location.WORLDWIDE
+        return int(geo_id)
+
     def __str__(self) -> str:
         """Return string representation of Search."""
         easy_apply = 'Yes' if self.easy_apply else 'No'

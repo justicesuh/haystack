@@ -15,7 +15,7 @@ firefox_blocklist: list[str] = [
 
 
 class BaseParser:
-    """Base class for managing Firefox based web scraping."""
+    """Base class for managing Firefox based web parsing."""
 
     blocklist: ClassVar[list[str]] = []
 
@@ -37,8 +37,6 @@ class BaseParser:
 
     def process_response(self, requests: list[Request]) -> Response | None:
         """Traverse requests in reverse and return first valid response."""
-        if requests is None:
-            return None
         for request in reversed(requests):
             response = cast('Response', request.response)
             if response is None or response.status_code == 404:
