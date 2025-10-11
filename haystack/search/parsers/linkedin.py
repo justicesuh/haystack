@@ -15,6 +15,8 @@ class LinkedInParser(BaseParser):
 
     JOBS_PER_PAGE = 10
 
+    MAX_JOB_COUNT = 1000
+
     blocklist: ClassVar[list[str]] = []
 
     name = 'linkedin'
@@ -58,6 +60,34 @@ class LinkedInParser(BaseParser):
             params['start'] = self.JOBS_PER_PAGE * (page - 1)
 
         return f'https://linkedin.com{endpoint}search?{urlencode(params)}'
+
+    def get_job_count(self, search: Search) -> int:
+        """Return number of jobs found."""
+        url = self.get_linkedin_url('/jobs/', search)
+        response = self.firefox.get_with_retry(url)
+        if response is None:
+            logger.error('Unable to retrieve job count')
+            return 0
+
+        soup = self.firefox.soupify()
+        try:
+            tag = soup.find('span', {'class': 'results-context-header__job-count'})
+            if tag is None:
+                logger.error('`results-context-header__job-count` not found')
+                return 0
+            count = tag.get_text(strip=True)
+            return min(int(''.join(filter(str.isdigit, count))), self.MAX_JOB_COUNT)
+        except Exception:
+            logger.exception('Error parsing job count')
+            return 0
+
+    def get_page_count(self, search: Search) -> int:
+        """Return number of pages to search."""
+        count = self.get_job_count(search)
+        if count == 0:
+            logger.info('Setting page count to 1')
+            return 1
+        return (count // self.JOBS_PER_PAGE) + 1
 
     def parse(self, search_source: SearchSource) -> str:
         """Parse jobs."""
