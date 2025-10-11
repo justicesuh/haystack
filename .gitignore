@@ -1,6 +1,7 @@
 __pycache__
 db-data
 docs
+download
 *.py[cod]
 .coverage
 .env
