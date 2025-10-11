@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 class LinkedInParser(BaseParser):
     """Search LinkedIn for jobs."""
 
+    JOBS_PER_PAGE = 10
+
     blocklist: ClassVar[list[str]] = []
 
     name = 'linkedin'
@@ -30,7 +32,7 @@ class LinkedInParser(BaseParser):
                 return response
         return None
 
-    def get_linkedin_url(self, endpoint: str, search: Search) -> str:
+    def get_linkedin_url(self, endpoint: str, search: Search, page: int = 1) -> str:
         """Return LinkedIn search url."""
         params = {
             'keywords': quote(search.keywords),
@@ -51,6 +53,9 @@ class LinkedInParser(BaseParser):
         ]
         if wt:
             params['f_WT'] = quote(','.join(wt))
+
+        if page > 1:
+            params['start'] = self.JOBS_PER_PAGE * (page - 1)
 
         return f'https://linkedin.com{endpoint}search?{urlencode(params)}'
 
