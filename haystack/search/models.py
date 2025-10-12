@@ -117,6 +117,10 @@ class SearchSource(UUIDModel):
     class Meta:
         unique_together: ClassVar[list[tuple[str, ...]]] = [('search', 'source')]
 
+    def set_status(self, status: Status) -> None:
+        self.status = status
+        self.save()
+
     def __str__(self) -> str:
         """Return Search and Source."""
         return f'{self.search} - {self.source}'

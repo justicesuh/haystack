@@ -2,9 +2,10 @@ import logging
 from typing import ClassVar
 from urllib.parse import quote, urlencode
 
+from bs4.element import Tag
 from seleniumwire.request import Request, Response
 
-from haystack.search.models import Search, SearchSource
+from haystack.search.models import Search, SearchSource, Status
 from haystack.search.parsers.base import BaseParser
 
 logger = logging.getLogger(__name__)
@@ -89,6 +90,73 @@ class LinkedInParser(BaseParser):
             return 1
         return (count // self.JOBS_PER_PAGE) + 1
 
-    def parse(self, search_source: SearchSource) -> str:
+    def parse_job(self, div: Tag) -> dict | None:
+        """Parse job div."""
+        error: str | None = None
+        job = {}
+
+        try:
+            company_link = div.find('h4', {'class': 'base-search-card__subtitle'}).find('a')
+            job['company'] = company_link.get_text(strip=True)
+            url = company_link['href']
+            # remove parameters
+            if '?' in url:
+                url = url.split('?', 1)[0]
+            job['company_url'] = url
+        except Exception:
+            logger.exception('Error parsing company information')
+            error = 'company'
+
+        try:
+            job['title'] = div.find('h3', {'class': 'base-search-card__title'}).get_text(strip=True)
+        except Exception:
+            logger.exception('Error parsing job title')
+            error = 'title'
+
+        try:
+            url = div.find('a', {'class': 'base-card__full-link'})['href']
+            # remove parameters
+            if '?' in url:
+                url = url.split('?', 1)[0]
+            job['url'] = url
+        except Exception:
+            logger.exception('Error parsing job url')
+            error = 'url'
+
+        try:
+            job['location'] = div.find('span', {'class': 'base-search-card__location'}).get_text(strip=True)
+        except Exception:
+            logger.exception('Unable to get location. Setting to None')
+            job['location'] = None
+
+        try:
+            time = div.find('time', {'class': 'job-search-card__listdate'})
+            if time is None:
+                time = div.find('time', {'class': 'job-search-card__listdate--new'})
+            job['date_posted'] = time['datetime']
+        except Exception:
+            logger.exception('Error parsing job post date')
+            error = 'date_posted'
+
+        if error is not None:
+            return None
+        return job
+
+    def parse(self, search_source: SearchSource) -> list[dict]:
         """Parse jobs."""
-        return self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search)
+        search_source.set_status(Status.RUNNING)
+        jobs = []
+        page_count = self.get_page_count(search_source.search)
+        for page in range(1, page_count + 1):
+            url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page)
+            response = self.firefox.get_with_retry(url)
+            if response is None:
+                logger.warning('Response for %s is None', url)
+                continue
+            for div in self.firefox.soupify().find_all('div', {'class': 'job-search-card'}):
+                job = self.parse_job(div)
+                if job is not None:
+                    jobs.append(job)
+        search_source.set_status(Status.SUCCESS)
+        return jobs
+
