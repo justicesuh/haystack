@@ -1,6 +1,6 @@
 import logging
 from typing import ClassVar
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlparse, urlunparse
 
 from bs4.element import Tag
 from seleniumwire.request import Request, Response
@@ -99,9 +99,7 @@ class LinkedInParser(BaseParser):
             company_link = div.find('h4', {'class': 'base-search-card__subtitle'}).find('a')
             job['company'] = company_link.get_text(strip=True)
             url = company_link['href']
-            # remove parameters
-            if '?' in url:
-                url = url.split('?', 1)[0]
+            url = urlunparse(urlparse(url)._replace(query=''))
             job['company_url'] = url
         except Exception:
             logger.exception('Error parsing company information')
@@ -115,16 +113,14 @@ class LinkedInParser(BaseParser):
 
         try:
             url = div.find('a', {'class': 'base-card__full-link'})['href']
-            # remove parameters
-            if '?' in url:
-                url = url.split('?', 1)[0]
+            url = urlunparse(urlparse(url)._replace(query=''))
             job['url'] = url
         except Exception:
             logger.exception('Error parsing job url')
             error = 'url'
 
         try:
-            job['location'] = div.find('span', {'class': 'base-search-card__location'}).get_text(strip=True)
+            job['location'] = div.find('span', {'class': 'job-search-card__location'}).get_text(strip=True)
         except Exception:
             logger.exception('Unable to get location. Setting to None')
             job['location'] = None

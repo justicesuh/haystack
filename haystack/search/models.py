@@ -118,6 +118,7 @@ class SearchSource(UUIDModel):
         unique_together: ClassVar[list[tuple[str, ...]]] = [('search', 'source')]
 
     def set_status(self, status: Status) -> None:
+        """Set status and save."""
         self.status = status
         self.save()
 
