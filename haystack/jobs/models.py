@@ -110,6 +110,7 @@ class Job(UUIDModel):
 
     STATUS_CHOICES = (
         (NEW, NEW.capitalize()),
+        (EXPIRED, EXPIRED.capitalize()),
         (DISMISSED, DISMISSED.capitalize()),
         (SAVED, SAVED.capitalize()),
         (APPLIED, APPLIED.capitalize()),
