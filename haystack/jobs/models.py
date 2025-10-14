@@ -1,9 +1,17 @@
-from typing import Any
+import logging
+from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from django.db import models
-from django.utils import timezone
+from django.utils import dateparse, timezone
 
 from haystack.core.models import UUIDModel
+
+if TYPE_CHECKING:
+    from haystack.search.models import SearchSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class Company(UUIDModel):
@@ -35,6 +43,45 @@ class Location(UUIDModel):
     def __str__(self) -> str:
         """Return Location name."""
         return self.name
+
+
+class JobManager(models.Manager):
+    """Custom model manager for Job."""
+
+    def parse_datetime(self, datetime_str: str) -> datetime | None:
+        """Parse datetime string and make timezone aware."""
+        dt = dateparse.parse_datetime(datetime_str)
+        if dt is None:
+            logger.warning('dateparse.parse_datetime failed for %s. Setting to None', datetime_str)
+            return None
+        if timezone.is_naive(dt):
+            dt = timezone.make_aware(dt)
+        return dt
+
+    def add_job(self, job: dict, search_source: 'SearchSource') -> bool:
+        """Add parsed job to database."""
+        company, _ = Company.objects.get_or_create(url=job['company_url'], defaults={'name': job['company']})
+
+        location = None
+        if job['location'] is not None:
+            location, _ = Location.objects.get_or_create(name=job['location'])
+
+        _, created = self.get_or_create(
+            url=job['url'],
+            defaults={
+                'company': company,
+                'title': job['title'],
+                'location': location,
+                'date_posted': self.parse_datetime(job['date_posted']),
+                'search_source': search_source,
+                'date_found': self.parse_datetime(job['date_found']),
+            },
+        )
+        return created
+
+    def add_jobs(self, jobs: list[dict], search_source: 'SearchSource') -> int:
+        """Add parsed jobs to database."""
+        return sum(1 for job in jobs if self.add_job(job, search_source))
 
 
 class Job(UUIDModel):
@@ -91,6 +138,8 @@ class Job(UUIDModel):
 
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=NEW)
     date_applied = models.DateTimeField(null=True, blank=True)
+
+    objects = JobManager()
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Cache Job status to track event history."""

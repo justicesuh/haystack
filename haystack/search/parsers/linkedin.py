@@ -2,6 +2,7 @@ import logging
 from typing import ClassVar
 from urllib.parse import quote, urlencode
 
+from django.utils import timezone
 from seleniumwire.request import Request, Response
 
 from haystack.search.models import Search, SearchSource, Status
@@ -139,6 +140,8 @@ class LinkedInParser(BaseParser):
         except Exception:
             logger.exception('Error parsing job post date')
             error = 'date_posted'
+
+        job['date_found'] = str(timezone.now())
 
         if error is not None:
             return None
