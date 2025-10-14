@@ -44,6 +44,8 @@ class Firefox:
 
         self.create_driver()
 
+        self.last_status_code = None
+
     def create_driver(self) -> None:
         """Create Firefox webdriver.
 
@@ -74,6 +76,8 @@ class Firefox:
             response = self.response_processor(self.driver.requests)
         else:
             response = self.get_last_response()
+        if response is not None:
+            self.last_status_code = response.status_code
         if response is None or response.status_code in [403, 404, 429, 500, 501, 502, 503, 504]:
             return None
         return response
