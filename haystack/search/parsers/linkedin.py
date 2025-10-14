@@ -35,7 +35,7 @@ class LinkedInParser(BaseParser):
                 return response
         return None
 
-    def get_linkedin_url(self, endpoint: str, search: Search, page: int = 1) -> str:
+    def get_linkedin_url(self, endpoint: str, search: Search, page: int = 1, period: int | None = None) -> str:
         """Return LinkedIn search url."""
         params = {
             'keywords': quote(search.keywords),
@@ -59,6 +59,9 @@ class LinkedInParser(BaseParser):
 
         if page > 1:
             params['start'] = self.JOBS_PER_PAGE * (page - 1)
+
+        if period is not None:
+            params['f_TPR'] = f'r{period}'
 
         return f'https://linkedin.com{endpoint}search?{urlencode(params)}'
 
@@ -141,8 +144,9 @@ class LinkedInParser(BaseParser):
         search_source.set_status(Status.RUNNING)
         jobs = []
         page_count = self.get_page_count(search_source.search)
+        period = search_source.calculate_period()
         for page in range(1, page_count + 1):
-            url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page)
+            url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page, period)
             response = self.firefox.get_with_retry(url)
             if response is None:
                 logger.warning('Response for %s is None', url)

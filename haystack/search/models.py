@@ -1,10 +1,21 @@
+from enum import IntEnum
 from typing import Any, ClassVar
 
 from django.db import models, transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from haystack.core.models import UUIDModel
 from haystack.jobs.models import Location
+
+
+class Period(IntEnum):
+    """Represent common search periods."""
+
+    MONTH = 2592000
+    WEEK = 604800
+    DAY = 86400
+    HOUR = 3600
 
 
 class Status(models.TextChoices):
@@ -117,9 +128,23 @@ class SearchSource(UUIDModel):
     class Meta:
         unique_together: ClassVar[list[tuple[str, ...]]] = [('search', 'source')]
 
+    def calculate_period(self) -> int:
+        """Calculate search period in seconds based on `last_executed_at`."""
+        if not self.last_executed_at:
+            return Period.MONTH
+
+        delta = (timezone.now() - self.last_executed_at).total_seconds()
+        for period in (Period.HOUR, Period.DAY, Period.WEEK):
+            if delta <= period:
+                return period
+
+        return Period.MONTH
+
     def set_status(self, status: Status) -> None:
         """Set status and save."""
         self.status = status
+        if self.status in (Status.SUCCESS, Status.ERROR):
+            self.last_executed_at = timezone.now()
         self.save()
 
     def __str__(self) -> str:
