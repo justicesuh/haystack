@@ -63,6 +63,11 @@ class LinkedInParser(BaseParser):
         if period is not None:
             params['f_TPR'] = f'r{period}'
 
+        # set distance parameter to 25 if location contains a comma with
+        # the assumption that names with commas represent cities in states
+        if ',' in getattr(search.location, 'name', ''):
+            params['distance'] = 25
+
         return f'https://linkedin.com{endpoint}search?{urlencode(params)}'
 
     def get_job_count(self, search: Search) -> int:
