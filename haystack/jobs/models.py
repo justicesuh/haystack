@@ -133,10 +133,13 @@ class Job(UUIDModel):
     date_found = models.DateField(null=True, blank=True)
     populated = models.BooleanField(default=False)
 
-    easy_apply = models.BooleanField(default=False)
-    flexibility = models.CharField(max_length=6, choices=FLEXIBILITY_CHOICES, default=ONSITE)
-    description = models.TextField(default='')
+    # flexibility is nullable because Search supports multiple flexibilities but
+    # there is not a reliable way to determine the flexibility when populating the Job
+    flexibility = models.CharField(max_length=6, choices=FLEXIBILITY_CHOICES, default=None, null=True, blank=True)
+
     raw_html = models.TextField(default='')
+    description = models.TextField(default='')
+    easy_apply = models.BooleanField(default=False)
 
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=NEW)
     date_applied = models.DateTimeField(null=True, blank=True)
