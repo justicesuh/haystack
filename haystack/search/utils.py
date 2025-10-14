@@ -28,7 +28,7 @@ class NullableTag:
         name: Any = None,
         attrs: dict[str, Any] | None = None,
         recursive: bool = True,
-        string: Any = str,
+        string: Any = None,
         **kwargs: Any,
     ) -> 'NullableTag':
         """Chainable `find()`."""
