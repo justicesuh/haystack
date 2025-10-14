@@ -57,6 +57,20 @@ class NullableTag:
             return None
         return self._tag.get_text(strip=strip)
 
+    def decode_contents(self, *args: Any, **kwargs: Any) -> str:
+        """Return inner html of Tag."""
+        if self._tag is None:
+            if self._raise_exc:
+                raise ValueError(self._error_msg)
+            return ''
+        return self._tag.decode_contents(*args, **kwargs)
+
     def __bool__(self) -> bool:
         """Return if internal Tag is not None."""
         return self._tag is not None
+
+    def __str__(self) -> str:
+        """Return string representation."""
+        if self._tag is None:
+            return ''
+        return str(self._tag)

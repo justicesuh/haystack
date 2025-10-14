@@ -5,6 +5,7 @@ from urllib.parse import quote, urlencode
 from django.utils import timezone
 from seleniumwire.request import Request, Response
 
+from haystack.jobs.models import Job
 from haystack.search.models import Search, SearchSource, Status
 from haystack.search.parsers.base import BaseParser
 from haystack.search.utils import NullableTag, remove_query
@@ -165,3 +166,34 @@ class LinkedInParser(BaseParser):
                     jobs.append(job)
         search_source.set_status(Status.SUCCESS)
         return jobs
+
+    def populate_job(self, job: Job) -> None:
+        """Populate Job with description and easy apply status."""
+        response = self.firefox.get_with_retry(job.url)
+        if response is None:
+            logger.warning('Response for %s is None', job.url)
+            if self.firefox.last_status_code == 404:
+                logger.warning('Job not found, marking as expired')
+                job.update_status(Job.EXPIRED)
+
+        soup = self.firefox.soupify()
+        root = NullableTag(soup.html)
+        job.raw_html = str(root)
+
+        try:
+            job.description = root.find('div', {'class': 'show-more-less-html__markup'}).decode_contents().strip()
+        except Exception:
+            logger.exception('Error parsing job description')
+
+        try:
+            code = root.find('code', {'id': 'applyUrl'})
+            if code is not None:
+                job.easy_apply = False
+            else:
+                job.easy_apply = True
+        except Exception:
+            logger.exception('Failed to parse easy application status. Defaulting to parse')
+            job.easy_apply = False
+
+        job.populated = True
+        job.save()

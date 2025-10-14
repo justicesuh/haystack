@@ -98,6 +98,7 @@ class Job(UUIDModel):
     )
 
     NEW = 'new'
+    EXPIRED = 'expired'
     DISMISSED = 'dismissed'
     SAVED = 'saved'
     APPLIED = 'applied'
