@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from haystack.core.models import UUIDModel
-from haystack.jobs.models import Location
+from haystack.jobs.models import Job, Location
 
 
 class Period(IntEnum):
@@ -75,6 +75,22 @@ class Search(UUIDModel):
     class Meta:
         verbose_name = 'search'
         verbose_name_plural = 'searches'
+
+    @property
+    def flexibility(self) -> str | None:
+        """Compute Job flexibility based on Search booleans.
+
+        Return None if multiple booleans are true.
+        """
+        if sum((self.is_hybrid, self.is_onsite, self.is_remote)) != 1:
+            return None
+        if self.is_hybrid:
+            return Job.HYBRID
+        if self.is_onsite:
+            return Job.ONSITE
+        if self.is_remote:
+            return Job.REJECTED
+        return None
 
     @property
     def geo_id(self) -> int:

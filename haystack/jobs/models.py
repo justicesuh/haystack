@@ -75,6 +75,7 @@ class JobManager(models.Manager):
                 'date_posted': self.parse_datetime(job['date_posted']),
                 'search_source': search_source,
                 'date_found': self.parse_datetime(job['date_found']),
+                'flexibility': search_source.search.flexibility,
             },
         )
         return created
@@ -135,7 +136,10 @@ class Job(UUIDModel):
 
     # flexibility is nullable because Search supports multiple flexibilities but
     # there is not a reliable way to determine the flexibility when populating the Job
-    flexibility = models.CharField(max_length=6, choices=FLEXIBILITY_CHOICES, default=None, null=True, blank=True)
+    #
+    # Usually DJ001 would be enforced (no null=True on CharField) but in
+    # this case we ignore since this CharField is acting as an enum field
+    flexibility = models.CharField(max_length=6, choices=FLEXIBILITY_CHOICES, default=None, null=True, blank=True)  # noqa: DJ001
 
     raw_html = models.TextField(default='')
     description = models.TextField(default='')
