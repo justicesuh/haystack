@@ -89,7 +89,7 @@ class Search(UUIDModel):
         if self.is_onsite:
             return Job.ONSITE
         if self.is_remote:
-            return Job.REJECTED
+            return Job.REMOTE
         return None
 
     @property
