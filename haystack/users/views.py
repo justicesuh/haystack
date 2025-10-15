@@ -3,15 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as user_login
 from django.contrib.auth import logout as user_logout
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-
-
-@login_required
-def index(request: HttpRequest) -> HttpResponse:
-    """Index page."""
-    return render(request, 'users/index.html')
 
 
 def login(request: HttpRequest) -> HttpResponse:

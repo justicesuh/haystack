@@ -15,8 +15,8 @@
             {% if request.user.is_authenticated %}
             <ul class="navbar-nav mx-auto position-absolute start-50 translate-middle-x">
                 <li class="nav-item"><a class="nav-link {% active '/jobs/' %}" href="/jobs/">Jobs</a></li>
-                <!-- <li class="nav-item"><a class="nav-link {% active '/companies/' %}" href="/companies/">Companies</a></li>
-                <li class="nav-item"><a class="nav-link {% active '/searches/' %}" href="/searches/">Searches</a></li> -->
+                <li class="nav-item"><a class="nav-link {% active '/companies/' %}" href="/companies/">Companies</a></li>
+                <li class="nav-item"><a class="nav-link {% active '/searches/' %}" href="/searches/">Searches</a></li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
