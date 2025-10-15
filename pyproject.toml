@@ -63,6 +63,9 @@ unfixable = []
 inline-quotes = "single"
 
 [tool.ruff.lint.per-file-ignores]
+"*/admin.py" = [
+    "D101",     # Missing docstring in public class
+]
 "*/apps.py" = [
     "D101",     # Missing docstring in public class
 ]
