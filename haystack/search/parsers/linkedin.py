@@ -6,7 +6,7 @@ from django.utils import timezone
 from seleniumwire.request import Request, Response
 
 from haystack.jobs.models import Job
-from haystack.search.models import Search, SearchSource, Status
+from haystack.search.models import Search, SearchSource
 from haystack.search.parsers.base import BaseParser
 from haystack.search.utils import NullableTag, remove_query
 
@@ -150,8 +150,7 @@ class LinkedInParser(BaseParser):
 
     def parse(self, search_source: SearchSource, page: int = 1) -> list[dict]:
         """Parse jobs."""
-        search_source.set_status(Status.RUNNING)
-        jobs = []
+        jobs: list[dict] = []
         period = search_source.calculate_period()
 
         url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page, period)
@@ -164,8 +163,6 @@ class LinkedInParser(BaseParser):
             job = self.parse_job(NullableTag(div))
             if job is not None:
                 jobs.append(job)
-
-        search_source.set_status(Status.SUCCESS)
         return jobs
 
     def populate_job(self, job: Job) -> None:
