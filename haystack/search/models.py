@@ -144,14 +144,20 @@ class SearchSource(UUIDModel):
     class Meta:
         unique_together: ClassVar[list[tuple[str, ...]]] = [('search', 'source')]
 
-    def calculate_period(self) -> int:
-        """Calculate search period in seconds based on `last_executed_at`."""
+    def calculate_period(self, tolerance: float = 0.04) -> int:
+        """Calculate search period in seconds based on `last_executed_at`.
+
+        Args:
+            tolerance (float): A tolerance factor for comparing time deltas.
+            The default value of 0.04 is approximately equal to 1 / 24.
+
+        """
         if not self.last_executed_at:
             return Period.MONTH
 
         delta = (timezone.now() - self.last_executed_at).total_seconds()
         for period in (Period.HOUR, Period.DAY, Period.WEEK):
-            if delta <= period:
+            if delta <= period * (1 + tolerance):
                 return period
 
         return Period.MONTH
