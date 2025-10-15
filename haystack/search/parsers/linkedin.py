@@ -92,9 +92,9 @@ class LinkedInParser(BaseParser):
             logger.exception('Error parsing job count')
             return 0
 
-    def get_page_count(self, search: Search) -> int:
+    def get_page_count(self, search_source: SearchSource) -> int:
         """Return number of pages to search."""
-        count = self.get_job_count(search)
+        count = self.get_job_count(search_source.search)
         if count == 0:
             logger.info('Setting page count to 1')
             return 1
@@ -148,22 +148,23 @@ class LinkedInParser(BaseParser):
             return None
         return job
 
-    def parse(self, search_source: SearchSource) -> list[dict]:
+    def parse(self, search_source: SearchSource, page: int = 1) -> list[dict]:
         """Parse jobs."""
         search_source.set_status(Status.RUNNING)
         jobs = []
-        page_count = self.get_page_count(search_source.search)
         period = search_source.calculate_period()
-        for page in range(1, page_count + 1):
-            url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page, period)
-            response = self.firefox.get_with_retry(url)
-            if response is None:
-                logger.warning('Response for %s is None', url)
-                continue
-            for div in self.firefox.soupify().find_all('div', {'class': 'job-search-card'}):
-                job = self.parse_job(NullableTag(div))
-                if job is not None:
-                    jobs.append(job)
+
+        url = self.get_linkedin_url('/jobs-guest/jobs/api/seeMoreJobPostings/', search_source.search, page, period)
+        response = self.firefox.get_with_retry(url)
+        if response is None:
+            logger.warning('Response for %s is None', url)
+            return jobs
+
+        for div in self.firefox.soupify().find_all('div', {'class': 'job-search-card'}):
+            job = self.parse_job(NullableTag(div))
+            if job is not None:
+                jobs.append(job)
+
         search_source.set_status(Status.SUCCESS)
         return jobs
 
