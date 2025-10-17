@@ -4,12 +4,6 @@ from django.shortcuts import render
 
 
 @login_required
-def metrics(request: HttpRequest) -> HttpResponse:
-    """Display metrics."""
-    return render(request, 'jobs/metrics.html')
-
-
-@login_required
 def jobs(request: HttpRequest) -> HttpResponse:
     """Display list of Jobs."""
     return render(request, 'jobs/jobs.html')

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block script %}
+<script>
+    for (let i = 0; i < {{ metrics|length }}; i++) {
+        console.log('test' + i)
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('progressBar' + i);
+            const target = bar.getAttribute('aria-valuenow');
+            bar.style.width = target + '%';
+        });
+    }
+</script>
+{% endblock %}
+{% block content %}
+<div class="row gx-3 gy-3">
+    {% for metric in metrics %}
+    <div class="col-md-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <p class="m-0">{{ metric.title }}</p>
+                <h2 class="fw-bold">{{ metric.count }}</h2>
+                <p class="small text-secondary mt-0 mb-2">{% if metric.delta != 0%}{{ metric.delta }}%{% else %}&nbsp;{% endif %}</p>
+                <div class="progress {% if metric.goal == 0 %}invisible{% endif %}" style="height: 20px">
+                    <div id="progressBar{{ forloop.counter0 }}" class="progress-bar progress-bar-animated" role="progressbar" style="width: 0%; transition: width 1s ease;" aria-valuenow="{{ metric.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
