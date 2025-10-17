@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django_htmx',
     'haystack.core',
     'haystack.jobs',
+    'haystack.metrics',
     'haystack.search',
     'haystack.users',
 ]
